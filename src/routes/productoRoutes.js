@@ -5,16 +5,19 @@ export const productoRoutes = Router();
 
 productoRoutes.get("/", buscarTodos);
 
+productoRoutes.get("/filtro", filtroPrecioMarca);
+
+productoRoutes.get("/top", topResenas);
+
 productoRoutes.get("/:id", buscarPorId);
 
 productoRoutes.post("/", crearProducto);
 
 productoRoutes.put("/:id", actualizarProducto);
 
-productoRoutes.delete("/:id", eliminarPorId);
-
 productoRoutes.put("/:id/stock", actualizarStock);
 
-productoRoutes.get("/top", topResenas);
+productoRoutes.delete("/:id", eliminarPorId);
 
-productoRoutes.get("/filtro", filtroPrecioMarca);
+
+
