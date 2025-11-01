@@ -3,7 +3,7 @@ import { Categoria } from "../models/categoria.js";
 export const crearCategoria = async (req, res) => {
   try {
     const { nombre, descripcion } = req.body;
-    const nuevaCategoria = new Categoria({nombre, descripcion});
+    const nuevaCategoria = new Categoria({ nombre, descripcion });
     const categoriaGuardada = await nuevaCategoria.save();
 
     return res.status(201).json(categoriaGuardada);
@@ -100,5 +100,31 @@ export const eliminarPorId = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
+  }
+};
+
+export const totalPorCategoria = async (req, res) => {
+  try {
+    const totalProductos = await Categoria.aggregate([
+      {
+        $lookup: {
+          from: "productos",
+          localField: "_id",
+          foreignField: "categoria",
+          as: "productos",
+        },
+      },
+      { $addFields: { cantidadProductos: { $size: "$productos" } } },
+      {
+        $project: {
+          nombre: 1,
+          cantidadProductos: 1,
+        },
+      },
+    ]);
+
+    return res.status(200).json(totalProductos);
+  } catch (error) {
+    return res.status(500).json({ message: "Error interno del servidor" });
   }
 };
