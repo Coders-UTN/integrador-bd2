@@ -3,12 +3,13 @@ import { Producto } from "../models/producto.js";
 
 export const crearProducto = async (req, res) => {
   try {
-    const { nombre, descripcion, categoria, precio, stock } = req.body;
+    const { nombre, descripcion, categoria, precio, marca, stock } = req.body;
     const nuevoProducto = new Producto({
       nombre,
       descripcion,
       categoria,
       precio,
+      marca,
       stock,
     });
 
@@ -64,7 +65,7 @@ export const buscarPorId = async (req, res) => {
 export const actualizarProducto = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, descripcion, categoria, precio, stock } = req.body;
+    const { nombre, descripcion, categoria, precio, marca, stock } = req.body;
     const nuevosDatos = {};
 
     if (categoria) {
@@ -88,6 +89,9 @@ export const actualizarProducto = async (req, res) => {
     }
     if (precio != undefined) {
       nuevosDatos.precio = precio;
+    }
+    if (marca != undefined) {
+      nuevosDatos.marca = marca;
     }
     if (stock != undefined) {
       nuevosDatos.stock = stock;
@@ -136,3 +140,89 @@ export const eliminarPorId = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+export const filtroPrecioMarca = async (req, res) => {
+  try {
+    const { precioMin, precioMax, marca } = req.query;
+    const query = {};
+
+    if (marca) {
+      query.marca = new RegExp(marca, "i"); //no distingue mayusculas
+    }
+
+    const precioFiltro = {};
+
+    if (precioMin) {
+      if (isNaN(precioMin)) {
+        return res
+          .status(400)
+          .json({ message: "El precio minimo debe ser un numero" });
+      }
+      precioFiltro.$gte = Number(precioMin);
+    }
+
+    if (precioMax) {
+      if (isNaN(precioMax)) {
+        return res
+          .status(400)
+          .json({ message: "El precio maximo debe ser un numero" });
+      }
+      precioFiltro.$lte = Number(precioMax);
+    }
+
+    if (precioMin && precioMax && Number(precioMin) > Number(precioMax)) {
+      return res
+        .status(400)
+        .json({ message: "El precio minimo no puede ser mayor que el maximo" });
+    }
+
+    if (Object.keys(precioFiltro).length > 0) {
+      query.precio = precioFiltro;
+    }
+
+    const productosEncontrados = await Producto.find(query);
+
+    return res.status(200).json(productosEncontrados);
+  } catch (error) {
+    res.status(500).json({ message: "Error inesperado del servidor" });
+  }
+};
+
+export const topResenas = async (req, res) => {
+  try {
+    const topProductos = await Producto.find().sort({cantidadResenas : -1}).limit(10);
+
+    return res.status(200).json(topProductos);
+  } catch (error) {
+    return res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+export const actualizarStock = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { stock } = req.body
+
+    if (stock === undefined) { 
+      return res.status(400).json({message : "Se erquiere envio de stock"})
+    }
+
+    if (isNaN(stock)) {
+      return res.status(400).json({message : "El valor de stock debe ser numerico"})
+    }
+
+    const productoModificado = await Producto.findByIdAndUpdate(
+      id,
+      {$set : { stock : stock}},
+      {new : true, runValidators : true}
+    );
+
+    if (!productoModificado){
+      return res.status(404).json({message : "No se encontro el producto a modificar"})
+    }
+
+    return res.status(200).json(productoModificado);
+  } catch (error) {
+    return res.status(500).json({message : "Error interno del servidor"});
+  }
+}
