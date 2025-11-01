@@ -24,7 +24,7 @@ const usuarioSchema = new mongoose.Schema(
       },
       default: "cliente",
     },
-    contrasenia: String,
+    contrasena: String,
   },
   { timestamps: true }
 );
