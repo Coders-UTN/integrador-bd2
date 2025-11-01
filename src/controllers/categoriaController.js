@@ -1,6 +1,6 @@
 import { Categoria } from "../models/categoria.js";
 
-export const crearCategoria = async (req, res) => {
+export const crearCategoria = async (req, res, next) => {
   try {
     const { nombre, descripcion } = req.body;
     const nuevaCategoria = new Categoria({ nombre, descripcion });
@@ -8,28 +8,20 @@ export const crearCategoria = async (req, res) => {
 
     return res.status(201).json(categoriaGuardada);
   } catch (error) {
-    if (error.code === 11000) {
-      return res
-        .status(400)
-        .json({ message: "Ya existe una categoría con ese nombre" });
-    }
-    if (error.name === "ValidationError") {
-      return res.status(400).json({ message: error.message });
-    }
-    return res.status(500).json({ message: "Error interno del servidor" });
+    next(error);
   }
 };
 
-export const buscarTodas = async (req, res) => {
+export const buscarTodas = async (req, res, next) => {
   try {
     const categorias = await Categoria.find();
     return res.status(200).json(categorias);
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+    next(error);
   }
 };
 
-export const buscarPorId = async (req, res) => {
+export const buscarPorId = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -41,11 +33,11 @@ export const buscarPorId = async (req, res) => {
 
     return res.status(200).json(categoriaEncontrada);
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+    next(error);
   }
 };
 
-export const actualizarCategoria = async (req, res) => {
+export const actualizarCategoria = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { nombre, descripcion } = req.body;
@@ -72,19 +64,11 @@ export const actualizarCategoria = async (req, res) => {
 
     return res.status(200).json(categoriaActualizada);
   } catch (error) {
-    if (error.code === 11000) {
-      return res
-        .status(400)
-        .json({ message: "Ya existe una categoría con ese nombre" });
-    }
-    if (error.name === "ValidationError") {
-      return res.status(400).json({ message: error.message });
-    }
-    return res.status(500).json({ message: "Error interno del servidor" });
+    next(error);
   }
 };
 
-export const eliminarPorId = async (req, res) => {
+export const eliminarPorId = async (req, res, next) => {
   try {
     const { id } = req.params;
     const categoriaEliminada = await Categoria.findByIdAndDelete(id);
@@ -99,11 +83,11 @@ export const eliminarPorId = async (req, res) => {
       categoria: categoriaEliminada,
     });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-export const totalPorCategoria = async (req, res) => {
+export const totalPorCategoria = async (req, res, next) => {
   try {
     const totalProductos = await Categoria.aggregate([
       {
@@ -125,6 +109,6 @@ export const totalPorCategoria = async (req, res) => {
 
     return res.status(200).json(totalProductos);
   } catch (error) {
-    return res.status(500).json({ message: "Error interno del servidor" });
+    next(error);
   }
 };

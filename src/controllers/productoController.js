@@ -1,7 +1,7 @@
 import { Categoria } from "../models/categoria.js";
 import { Producto } from "../models/producto.js";
 
-export const crearProducto = async (req, res) => {
+export const crearProducto = async (req, res, next) => {
   try {
     const { nombre, descripcion, categoria, precio, marca, stock } = req.body;
     const nuevoProducto = new Producto({
@@ -25,24 +25,16 @@ export const crearProducto = async (req, res) => {
 
     return res.status(201).json(productoGuardado);
   } catch (error) {
-    if (error.code === 11000) {
-      return res
-        .status(400)
-        .json({ message: "Ya existe un producto con ese nombre" });
-    }
-    if (error.name === "ValidationError") {
-      return res.status(400).json({ message: error.message });
-    }
-    return res.status(500).json({ message: "Error interno del servidor" });
+    next(error);
   }
 };
 
-export const buscarTodos = async (req, res) => {
+export const buscarTodos = async (req, res, next) => {
   try {
-    const productos = await Producto.find().populate("categoria" ,"nombre");
+    const productos = await Producto.find().populate("categoria", "nombre");
     return res.status(200).json(productos);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
@@ -50,7 +42,10 @@ export const buscarPorId = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const productoEncontrado = await Producto.findById(id).populate("categoria", "nombre");
+    const productoEncontrado = await Producto.findById(id).populate(
+      "categoria",
+      "nombre"
+    );
 
     if (!productoEncontrado) {
       return res.status(404).json({ message: "No se encontro el producto" });
@@ -58,11 +53,11 @@ export const buscarPorId = async (req, res) => {
 
     return res.status(200).json(productoEncontrado);
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-export const actualizarProducto = async (req, res) => {
+export const actualizarProducto = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { nombre, descripcion, categoria, precio, marca, stock } = req.body;
@@ -110,19 +105,11 @@ export const actualizarProducto = async (req, res) => {
 
     return res.status(200).json(productoActualizado);
   } catch (error) {
-    if (error.code === 11000) {
-      return res
-        .status(400)
-        .json({ message: "Ya existe un producto con ese nombre" });
-    }
-    if (error.name === "ValidationError") {
-      return res.status(400).json({ message: error.message });
-    }
-    return res.status(500).json({ message: "Error interno del servidor" });
+    next(error);
   }
 };
 
-export const eliminarPorId = async (req, res) => {
+export const eliminarPorId = async (req, res, next) => {
   try {
     const { id } = req.params;
     const productoEliminado = await Producto.findByIdAndDelete(id);
@@ -137,11 +124,11 @@ export const eliminarPorId = async (req, res) => {
       producto: productoEliminado,
     });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-export const filtroPrecioMarca = async (req, res) => {
+export const filtroPrecioMarca = async (req, res, next) => {
   try {
     const { precioMin, precioMax, marca } = req.query;
     const query = {};
@@ -184,45 +171,54 @@ export const filtroPrecioMarca = async (req, res) => {
 
     return res.status(200).json(productosEncontrados);
   } catch (error) {
-    res.status(500).json({ message: "Error inesperado del servidor" });
+    next(error);
   }
 };
 
-export const topResenas = async (req, res) => {
+export const topResenas = async (req, res, next) => {
   try {
-    const topProductos = await Producto.find({},{nombre : 1, marca : 1, cantidadResenas : 1}).sort({cantidadResenas : -1}).limit(10);
+    const topProductos = await Producto.find(
+      {},
+      { nombre: 1, marca: 1, cantidadResenas: 1 }
+    )
+      .sort({ cantidadResenas: -1 })
+      .limit(10);
 
     return res.status(200).json(topProductos);
   } catch (error) {
-    return res.status(500).json({ message: "Error interno del servidor" });
+    next(error);
   }
 };
 
-export const actualizarStock = async (req, res) => {
+export const actualizarStock = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { stock } = req.body
+    const { stock } = req.body;
 
-    if (stock === undefined) { 
-      return res.status(400).json({message : "Se erquiere envio de stock"})
+    if (stock === undefined) {
+      return res.status(400).json({ message: "Se erquiere envio de stock" });
     }
 
     if (isNaN(stock)) {
-      return res.status(400).json({message : "El valor de stock debe ser numerico"})
+      return res
+        .status(400)
+        .json({ message: "El valor de stock debe ser numerico" });
     }
 
     const productoModificado = await Producto.findByIdAndUpdate(
       id,
-      {$set : { stock : stock}},
-      {new : true, runValidators : true}
+      { $set: { stock: stock } },
+      { new: true, runValidators: true }
     );
 
-    if (!productoModificado){
-      return res.status(404).json({message : "No se encontro el producto a modificar"})
+    if (!productoModificado) {
+      return res
+        .status(404)
+        .json({ message: "No se encontro el producto a modificar" });
     }
 
     return res.status(200).json(productoModificado);
   } catch (error) {
-    return res.status(500).json({message : "Error interno del servidor"});
+    next(error);
   }
-}
+};
