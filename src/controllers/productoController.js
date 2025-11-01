@@ -39,7 +39,7 @@ export const crearProducto = async (req, res) => {
 
 export const buscarTodos = async (req, res) => {
   try {
-    const productos = await Producto.find();
+    const productos = await Producto.find().populate("categoria" ,"nombre");
     return res.status(200).json(productos);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -50,7 +50,7 @@ export const buscarPorId = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const productoEncontrado = await Producto.findById(id);
+    const productoEncontrado = await Producto.findById(id).populate("categoria", "nombre");
 
     if (!productoEncontrado) {
       return res.status(404).json({ message: "No se encontro el producto" });
@@ -190,7 +190,7 @@ export const filtroPrecioMarca = async (req, res) => {
 
 export const topResenas = async (req, res) => {
   try {
-    const topProductos = await Producto.find().sort({cantidadResenas : -1}).limit(10);
+    const topProductos = await Producto.find({},{nombre : 1, marca : 1, cantidadResenas : 1}).sort({cantidadResenas : -1}).limit(10);
 
     return res.status(200).json(topProductos);
   } catch (error) {
