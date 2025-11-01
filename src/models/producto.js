@@ -14,6 +14,11 @@ const productoSchema = new mongoose.Schema(
       required: [true, "El producto debe tener precio"],
       min: [0, "El precio no puede ser negativo"],
     },
+    marca: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     stock: {
       type: Number,
       required: [true, "El producto debe tener stock asignado"],
@@ -26,6 +31,10 @@ const productoSchema = new mongoose.Schema(
         ref: "Resena",
       },
     ],
+    cantidadResenas : {
+      type : Number,
+      default : 0
+    }
   },
   { timestamps: true }
 );
