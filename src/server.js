@@ -6,6 +6,7 @@ import { productoRoutes } from './routes/productoRoutes.js';
 
 import { rutasUsuario } from './routes/usuarioRoutes.js';
 import { resenaRoutes } from './routes/resenaRoutes.js';
+import { carritoRoutes } from './routes/carritoRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,6 +26,7 @@ app.use('/api/usuarios', rutasUsuario);
 app.use("/api/categorias", categoriaRoutes);
 app.use("/api/productos", productoRoutes);
 app.use('/api/resenas', resenaRoutes);
+app.use("/api/carrito", carritoRoutes);
 
 app.use((err, req, res, next) => {
     console.error(err.stack); 
