@@ -1,4 +1,5 @@
 import { Usuario } from "../models/usuario.js";
+import { Carrito } from "../models/carrito.js";
 
 import {contrasenaEncriptada,ValidarContrasena} from "../services/contrasenaService.js"
 
@@ -174,6 +175,8 @@ export const eliminarUsuario = async(req,res,next) =>{
     try{
         const {id} = req.params;
 
+        await Carrito.findOneAndDelete({ usuario: id });
+        
         const usuarioEliminado = await Usuario.findByIdAndDelete(id);
 
         if(!usuarioEliminado){

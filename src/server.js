@@ -4,7 +4,8 @@ import 'dotenv/config';
 import { categoriaRoutes } from './routes/categoriaRoutes.js';
 import { productoRoutes } from './routes/productoRoutes.js';
 
-//import { rutasUsuario } from './routes/usuarioRoutes.js';
+import { rutasUsuario } from './routes/usuarioRoutes.js';
+import { resenaRoutes } from './routes/resenaRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,6 +24,7 @@ mongoose.connect(MONGO_URI)
 app.use('/api/usuarios', rutasUsuario);
 app.use("/api/categorias", categoriaRoutes);
 app.use("/api/productos", productoRoutes);
+app.use('/api/resenas', resenaRoutes);
 
 app.use((err, req, res, next) => {
     console.error(err.stack); 
