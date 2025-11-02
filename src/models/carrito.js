@@ -16,15 +16,17 @@ const itemCarrito = new mongoose.Schema(
   { _id: false }
 );
 
-const carritoSchema = new mongoose.Schema({
-    items : [itemCarrito],
-    usuario : {
-        type : Schema.Types.ObjectId,
-        ref : "Usuario",
-        required : true,
-        unique : true
-    }
-},
-{timestamps : true})
+const carritoSchema = new mongoose.Schema(
+  {
+    items: { type: [itemCarrito], default: [] },
+    usuario: {
+      type: Schema.Types.ObjectId,
+      ref: "Usuario",
+      required: true,
+      unique: true,
+    },
+  },
+  { timestamps: true }
+);
 
-export const Carrito = mongoose.model("Carrito", carritoSchema)
+export const Carrito = mongoose.model("Carrito", carritoSchema);
