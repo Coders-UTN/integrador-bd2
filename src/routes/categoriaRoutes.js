@@ -1,17 +1,27 @@
 import { Router } from "express";
-import { actualizarCategoria, buscarPorId, buscarTodas, crearCategoria, eliminarPorId, totalPorCategoria } from "../controllers/categoriaController.js";
+import { 
+    actualizarCategoria, 
+    buscarPorId, 
+    buscarTodas, 
+    crearCategoria, 
+    eliminarPorId, 
+    totalPorCategoria 
+} from "../controllers/categoriaController.js";
+
+import { verificarToken, EsAdmin } from "../services/authService.js";
 
 export const categoriaRoutes = Router();
 
+//P de publica
+
 categoriaRoutes.get("/", buscarTodas);
-
-categoriaRoutes.get("/stats", totalPorCategoria);
-
 categoriaRoutes.get("/:id", buscarPorId);
 
-categoriaRoutes.post("/", crearCategoria);
 
-categoriaRoutes.put("/:id", actualizarCategoria)
 
-categoriaRoutes.delete("/:id", eliminarPorId);
+//P de privada
 
+categoriaRoutes.get("/stats", verificarToken, EsAdmin, totalPorCategoria);
+categoriaRoutes.post("/", verificarToken, EsAdmin, crearCategoria);
+categoriaRoutes.put("/:id", verificarToken, EsAdmin, actualizarCategoria)
+categoriaRoutes.delete("/:id", verificarToken, EsAdmin, eliminarPorId);

@@ -1,30 +1,20 @@
 import{Router} from "express";
-
 import{
     crearResena,
     listarResenas,
     resenasPorProducto,
     promedioCalificaciones
-
 } from "../controllers/resenaController.js";
-
-
 import { verificarToken } from "../services/authService.js";
-
 
 export const resenaRoutes = Router();
 
 
-//Publicas
-
+//P de publica
 resenaRoutes.get("/",listarResenas);
+resenaRoutes.get("/top",promedioCalificaciones);
+resenaRoutes.get("/product/:productId", resenasPorProducto);
 
-resenaRoutes.get("/top",promedioCalificaciones)
 
+//P de privada
 resenaRoutes.post("/",verificarToken,crearResena);
-
-
-//Admin Edition
-
-resenaRoutes.post("/",verificarToken,crearResena);
-
