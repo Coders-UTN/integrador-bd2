@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { buscarCarritoUsuario, calcularTotalCarrito } from "../controllers/carritoController";
+import { borrarCarritoUsuario, buscarCarritoUsuario, calcularTotalCarrito, crearCarrito } from "../controllers/carritoController";
 
 export const carritoRoutes = Router();
 
 carritoRoutes.get("/:usuarioId", buscarCarritoUsuario);
 
 carritoRoutes.get("/:usuarioId/total", calcularTotalCarrito);
+
+carritoRoutes.post("/", crearCarrito);
+
+pedidoRoutes.delete("/:usuarioId", borrarCarritoUsuario);
