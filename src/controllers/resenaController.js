@@ -67,8 +67,6 @@ export const promedioCalificaciones = async(req,res,next) =>{
     } 
 };
 
-//Post (Malone):
-//Ojo que esta requiere token y que el usuario compre el producto (secos aca no):
 export const crearResena = async(req,res,next) =>{
     try{
         const{producto,comentario,calificacion} = req.body;
