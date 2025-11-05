@@ -9,12 +9,13 @@ import { verificarToken } from "../services/authService.js";
 
 export const carritoRoutes = Router();
 
+
 carritoRoutes.use(verificarToken);
 
-carritoRoutes.get("/:usuarioId", buscarCarritoUsuario);
+carritoRoutes.delete("/:usuarioId/item/:productoId", eliminarItem);
 
 carritoRoutes.get("/:usuarioId/total", calcularTotalCarrito);
 
 carritoRoutes.post("/:usuarioId/item", agregarItem);
 
-carritoRoutes.delete("/:usuarioId/item/:productoId", eliminarItem);
+carritoRoutes.get("/:usuarioId", buscarCarritoUsuario);
