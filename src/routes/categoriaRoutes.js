@@ -15,7 +15,7 @@ export const categoriaRoutes = Router();
 //P de publica
 
 categoriaRoutes.get("/", buscarTodas);
-categoriaRoutes.get("/:id", buscarPorId);
+
 
 
 
@@ -25,3 +25,5 @@ categoriaRoutes.get("/stats", verificarToken, EsAdmin, totalPorCategoria);
 categoriaRoutes.post("/", verificarToken, EsAdmin, crearCategoria);
 categoriaRoutes.put("/:id", verificarToken, EsAdmin, actualizarCategoria)
 categoriaRoutes.delete("/:id", verificarToken, EsAdmin, eliminarPorId);
+
+categoriaRoutes.get("/:id", buscarPorId);
